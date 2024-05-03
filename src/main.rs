@@ -1,4 +1,5 @@
 use clap::{Args, Parser, Subcommand};
+use std::path::Path;
 
 // rcli csv -i input.csv -o output.json --header -d ','
 #[derive(Debug, Parser)]
@@ -16,7 +17,7 @@ enum SubCommand {
 
 #[derive(Debug, Args)]
 struct CsvOpts {
-    #[arg(short, long)]
+    #[arg(short, long, value_parser = validate_input_file)]
     input: String,
     #[arg(short, long, default_value = "output.json")]
     output: String,
@@ -29,4 +30,12 @@ struct CsvOpts {
 fn main() {
     let opts = Opts::parse();
     println!("{:?}", opts);
+}
+
+fn validate_input_file(filename: &str) -> Result<String, &'static str> {
+    if Path::new(filename).exists() {
+        Ok(filename.into())
+    } else {
+        Err("File does not exist")
+    }
 }
