@@ -2,7 +2,7 @@
 use clap::{Args, Parser, Subcommand};
 use csv::Reader;
 use serde::{Deserialize, Serialize};
-use std::path::Path;
+use std::{fs, path::Path};
 
 #[derive(Debug, Parser)]
 #[command(name = "rcli", version, author, about, long_about=None)]
@@ -47,10 +47,13 @@ fn main() -> anyhow::Result<()> {
     match opts.cmd {
         SubCommand::Csv(opts) => {
             let mut reader = Reader::from_path(opts.input)?;
+            let mut ret = Vec::with_capacity(128);
             for result in reader.deserialize() {
                 let record: Player = result?;
-                println!("{:?}", record);
+                ret.push(record);
             }
+            let json = serde_json::to_string_pretty(&ret)?;
+            fs::write(opts.output, json)?;
         }
     }
     Ok(())
