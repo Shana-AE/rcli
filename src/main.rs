@@ -41,18 +41,19 @@ struct CsvOpts {
     delimiter: char,
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let opts = Opts::parse();
     println!("{:?}", opts);
     match opts.cmd {
         SubCommand::Csv(opts) => {
-            let mut reader = Reader::from_path(opts.input).unwrap();
+            let mut reader = Reader::from_path(opts.input)?;
             for result in reader.deserialize() {
-                let record: Player = result.unwrap();
+                let record: Player = result?;
                 println!("{:?}", record);
             }
         }
     }
+    Ok(())
 }
 
 fn validate_input_file(filename: &str) -> Result<String, &'static str> {
