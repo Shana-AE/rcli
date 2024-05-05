@@ -1,15 +1,9 @@
 // rcli csv -i input.csv -o output.json --header -d ','
-use clap::{Args, Parser, Subcommand};
+use clap::Parser;
 use csv::Reader;
+use rcli::{Opts, SubCommand};
 use serde::{Deserialize, Serialize};
-use std::{fs, path::Path};
-
-#[derive(Debug, Parser)]
-#[command(name = "rcli", version, author, about, long_about=None)]
-struct Opts {
-    #[command(subcommand)]
-    cmd: SubCommand,
-}
+use std::fs;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
@@ -21,24 +15,6 @@ struct Player {
     nationality: String,
     #[serde(rename = "Kit Number")]
     kit: u8,
-}
-
-#[derive(Debug, Subcommand)]
-enum SubCommand {
-    #[command(name = "csv", about = "Show CSV, or convert CSV to other formats")]
-    Csv(CsvOpts),
-}
-
-#[derive(Debug, Args)]
-struct CsvOpts {
-    #[arg(short, long, value_parser = validate_input_file)]
-    input: String,
-    #[arg(short, long, default_value = "output.json")]
-    output: String,
-    #[arg(long, default_value_t = false)]
-    header: bool,
-    #[arg(short, long, default_value_t = ',')]
-    delimiter: char,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -57,12 +33,4 @@ fn main() -> anyhow::Result<()> {
         }
     }
     Ok(())
-}
-
-fn validate_input_file(filename: &str) -> Result<String, &'static str> {
-    if Path::new(filename).exists() {
-        Ok(filename.into())
-    } else {
-        Err("File does not exist")
-    }
 }
