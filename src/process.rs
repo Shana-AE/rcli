@@ -1,5 +1,6 @@
 use csv::Reader;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::fs;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -17,9 +18,13 @@ struct Player {
 pub fn process_csv(input: &str, output: &str) -> anyhow::Result<()> {
     let mut reader = Reader::from_path(input)?;
     let mut ret = Vec::with_capacity(128);
-    for result in reader.deserialize() {
-        let record: Player = result?;
-        ret.push(record);
+    let headers = reader.headers()?.clone();
+    for result in reader.records() {
+        let record = result?;
+        println!("headers, {:?}, {:?}", headers, record);
+        let json_record = headers.iter().zip(record.iter()).collect::<Value>();
+        println!("{:?}", json_record);
+        ret.push(json_record);
     }
     let json = serde_json::to_string_pretty(&ret)?;
     fs::write(output, json)?;
