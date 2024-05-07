@@ -1,4 +1,5 @@
 use clap::{Args, Parser, Subcommand};
+use std::fmt;
 use std::{path::Path, str::FromStr};
 
 #[derive(Debug, Parser)]
@@ -14,7 +15,7 @@ pub enum SubCommand {
     Csv(CsvOpts),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum OutputFormat {
     Json,
     Yaml,
@@ -25,9 +26,9 @@ pub enum OutputFormat {
 pub struct CsvOpts {
     #[arg(short, long, value_parser = validate_input_file)]
     pub input: String,
-    #[arg(short, long, default_value = "output.json")]
-    pub output: String,
-    #[arg(short, long, value_parser= parse_format, default_value = "json")]
+    #[arg(short, long)]
+    pub output: Option<String>,
+    #[arg(long, value_parser= parse_format, default_value = "json")]
     pub format: OutputFormat,
     #[arg(long, default_value_t = false)]
     pub header: bool,
@@ -67,5 +68,11 @@ impl FromStr for OutputFormat {
             "toml" => Ok(OutputFormat::Toml),
             v => anyhow::bail!("Unsupported format: {}", v),
         }
+    }
+}
+
+impl fmt::Display for OutputFormat {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", Into::<&str>::into(*self))
     }
 }

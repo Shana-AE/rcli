@@ -7,8 +7,17 @@ fn main() -> anyhow::Result<()> {
     println!("{:?}", opts);
     match opts.cmd {
         SubCommand::Csv(opts) => {
-            println!("{:?}", opts);
-            process_csv(&opts.input, &opts.output)?
+            let output = if let Some(output) = opts.output {
+                if output.ends_with(&opts.format.to_string()) {
+                    output
+                } else {
+                    format!("{}.{}", output, opts.format)
+                }
+            } else {
+                format!("output.{}", opts.format)
+            };
+            print!("Processing CSV file... to {}", output);
+            process_csv(&opts.input, &output, opts.format)?
         }
     }
     Ok(())

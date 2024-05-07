@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fs;
 
+use crate::opts::OutputFormat;
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct Player {
@@ -15,15 +17,13 @@ struct Player {
     kit: u8,
 }
 
-pub fn process_csv(input: &str, output: &str) -> anyhow::Result<()> {
+pub fn process_csv(input: &str, output: &str, _format: OutputFormat) -> anyhow::Result<()> {
     let mut reader = Reader::from_path(input)?;
     let mut ret = Vec::with_capacity(128);
     let headers = reader.headers()?.clone();
     for result in reader.records() {
         let record = result?;
-        println!("headers, {:?}, {:?}", headers, record);
         let json_record = headers.iter().zip(record.iter()).collect::<Value>();
-        println!("{:?}", json_record);
         ret.push(json_record);
     }
     let json = serde_json::to_string_pretty(&ret)?;
