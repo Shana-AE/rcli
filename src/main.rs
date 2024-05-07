@@ -17,6 +17,7 @@ fn main() -> anyhow::Result<()> {
             };
             process_csv(&opts.input, &output, opts.format)?
         }
+        SubCommand::GenPass(gen_pass) => println!("gen_pass: {:?}", gen_pass),
     }
     Ok(())
 }
