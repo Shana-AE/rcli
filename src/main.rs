@@ -4,7 +4,6 @@ use rcli::{process_csv, Opts, SubCommand};
 
 fn main() -> anyhow::Result<()> {
     let opts = Opts::parse();
-    println!("{:?}", opts);
     match opts.cmd {
         SubCommand::Csv(opts) => {
             let output = if let Some(output) = opts.output {
@@ -16,7 +15,6 @@ fn main() -> anyhow::Result<()> {
             } else {
                 format!("output.{}", opts.format)
             };
-            print!("Processing CSV file... to {}", output);
             process_csv(&opts.input, &output, opts.format)?
         }
     }

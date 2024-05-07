@@ -45,7 +45,7 @@ fn validate_input_file(filename: &str) -> Result<String, &'static str> {
 }
 
 fn parse_format(format: &str) -> Result<OutputFormat, anyhow::Error> {
-    format.parse::<OutputFormat>()
+    format.parse()
 }
 
 impl From<OutputFormat> for &'static str {
