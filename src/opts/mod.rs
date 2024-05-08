@@ -1,10 +1,10 @@
-mod csv_opts;
-mod gen_pass;
+mod csv;
+mod genpass;
 
 use clap::{Parser, Subcommand};
 
-pub use csv_opts::{CsvOpts, OutputFormat};
-pub use gen_pass::GenPassOpts;
+pub use self::csv::{CsvOpts, OutputFormat};
+pub use genpass::GenPassOpts;
 
 #[derive(Debug, Parser)]
 #[command(name = "rcli", version, author, about, long_about=None)]
