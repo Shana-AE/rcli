@@ -2,10 +2,12 @@ mod b64;
 mod csv;
 mod genpass;
 
+use std::path::Path;
+
 use clap::{Parser, Subcommand};
 
 pub use self::csv::{CsvOpts, OutputFormat};
-pub use b64::Base64SubCommand;
+pub use b64::{Base64Format, Base64SubCommand};
 pub use genpass::GenPassOpts;
 
 #[derive(Debug, Parser)]
@@ -23,4 +25,27 @@ pub enum SubCommand {
     GenPass(GenPassOpts),
     #[command(name = "base64", about = "Base64 encode or decode", subcommand)]
     Base64SubCommand(Base64SubCommand),
+}
+
+fn validate_input_file(filename: &str) -> Result<String, &'static str> {
+    if filename == "-" || Path::new(filename).exists() {
+        Ok(filename.into())
+    } else {
+        Err("File does not exist")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_validate_input_file() {
+        assert_eq!(validate_input_file("-"), Ok("-".into()));
+        assert_eq!(validate_input_file("Cargo.toml"), Ok("Cargo.toml".into()));
+        assert_eq!(
+            validate_input_file("nonexistent"),
+            Err("File does not exist")
+        );
+    }
 }
