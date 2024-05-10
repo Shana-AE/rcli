@@ -1,6 +1,7 @@
 mod b64;
 mod csv;
 mod genpass;
+mod text;
 
 use std::path::Path;
 
@@ -27,7 +28,7 @@ pub enum SubCommand {
     Base64SubCommand(Base64SubCommand),
 }
 
-fn validate_input_file(filename: &str) -> Result<String, &'static str> {
+fn verify_file(filename: &str) -> Result<String, &'static str> {
     if filename == "-" || Path::new(filename).exists() {
         Ok(filename.into())
     } else {
@@ -40,12 +41,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_validate_input_file() {
-        assert_eq!(validate_input_file("-"), Ok("-".into()));
-        assert_eq!(validate_input_file("Cargo.toml"), Ok("Cargo.toml".into()));
-        assert_eq!(
-            validate_input_file("nonexistent"),
-            Err("File does not exist")
-        );
+    fn test_verify_file() {
+        assert_eq!(verify_file("-"), Ok("-".into()));
+        assert_eq!(verify_file("Cargo.toml"), Ok("Cargo.toml".into()));
+        assert_eq!(verify_file("nonexistent"), Err("File does not exist"));
     }
 }
