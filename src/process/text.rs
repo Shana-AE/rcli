@@ -48,9 +48,8 @@ pub fn process_text_sign(input: &str, key: &str, format: TextSignFormat) -> anyh
     let signed = match format {
         TextSignFormat::Blake3 => {
             let key = fs::read(key)?;
-            let key = key
-                .try_into()
-                .map_err(|vec: Vec<u8>| anyhow::anyhow!("Expected 32 bytes, got {}", vec.len()))?;
+            let key = &key[..32];
+            let key = key.try_into()?;
             let signer = Blake3 { key };
             signer.sign(&mut reader)?
         }
