@@ -8,6 +8,7 @@ use std::path::Path;
 use clap::{Parser, Subcommand};
 
 pub use self::csv::{CsvOpts, OutputFormat};
+pub use self::text::{TextSignFormat, TextSubCommand};
 pub use b64::{Base64Format, Base64SubCommand};
 pub use genpass::GenPassOpts;
 
@@ -26,6 +27,8 @@ pub enum SubCommand {
     GenPass(GenPassOpts),
     #[command(name = "base64", about = "Base64 encode or decode", subcommand)]
     Base64SubCommand(Base64SubCommand),
+    #[command(name = "text", about = "Sign or verify a message", subcommand)]
+    Text(TextSubCommand),
 }
 
 fn verify_file(filename: &str) -> Result<String, &'static str> {
