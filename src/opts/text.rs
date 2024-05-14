@@ -30,7 +30,7 @@ pub struct TextVerifyOpts {
     #[arg(short, long)]
     pub sig: String,
     #[arg(long, default_value = "blake3", value_parser = parse_text_sign_format )]
-    format: TextSignFormat,
+    pub format: TextSignFormat,
 }
 
 #[derive(Debug, Clone, Copy)]
