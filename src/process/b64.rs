@@ -5,7 +5,7 @@ use base64::{
 };
 use std::io::Read;
 
-pub fn process_encode(input: &str, format: Base64Format) -> anyhow::Result<()> {
+pub fn process_encode(input: &str, format: Base64Format) -> anyhow::Result<String> {
     let mut reader = get_reader(input)?;
 
     let mut buffer = Vec::new();
@@ -14,12 +14,11 @@ pub fn process_encode(input: &str, format: Base64Format) -> anyhow::Result<()> {
         Base64Format::Standard => STANDARD.encode(buffer),
         Base64Format::UrlSafe => URL_SAFE_NO_PAD.encode(buffer),
     };
-    println!("{}", encoded);
 
-    Ok(())
+    Ok(encoded)
 }
 
-pub fn process_decode(input: &str, format: Base64Format) -> anyhow::Result<()> {
+pub fn process_decode(input: &str, format: Base64Format) -> anyhow::Result<String> {
     let mut reader = get_reader(input)?;
     let mut buf = String::new();
     reader.read_to_string(&mut buf)?;
@@ -34,8 +33,8 @@ pub fn process_decode(input: &str, format: Base64Format) -> anyhow::Result<()> {
 
     // TODO: decoded data might not be string (but for this example, we assume it is)
     let decoded = String::from_utf8(decoded)?;
-    println!("{}", decoded);
-    Ok(())
+
+    Ok(decoded)
 }
 
 #[cfg(test)]
