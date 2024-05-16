@@ -4,8 +4,8 @@ use std::fs;
 use clap::Parser;
 use rcli::{
     process_csv, process_decode, process_encode, process_genpass, process_text_generate,
-    process_text_sign, process_text_verify, Base64SubCommand, Opts, SubCommand, TextSignFormat,
-    TextSubCommand,
+    process_text_sign, process_text_verify, Base64SubCommand, HttpSubCommand, Opts, SubCommand,
+    TextSignFormat, TextSubCommand,
 };
 use zxcvbn::zxcvbn;
 
@@ -68,6 +68,14 @@ fn main() -> anyhow::Result<()> {
                         fs::write(name.join("ed25519.pk"), &keys[1])?;
                     }
                 }
+            }
+        },
+        SubCommand::Http(cmd) => match cmd {
+            HttpSubCommand::Serve(opts) => {
+                println!(
+                    "Serving dir: {:?} at http::/0.0.0.0:{}",
+                    opts.dir, opts.port
+                );
             }
         },
     }
