@@ -1,0 +1,13 @@
+# Axum
+@port = 3001
+### Test Index Url
+GET http://localhost:{{port}}/ HTTP/2
+
+### Test String File
+GET http://localhost:{{port}}/fixtures/b64.txt
+
+### Test Not found
+GET http://localhost:{{port}}/fixtures/sdfsjflkasj
+
+### Test Bin File
+GET http://localhost:{{port}}/fixtures/ed25519.pk
