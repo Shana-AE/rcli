@@ -11,3 +11,20 @@ GET http://localhost:{{port}}/fixtures/sdfsjflkasj
 
 ### Test Bin File
 GET http://localhost:{{port}}/fixtures/ed25519.pk
+
+
+# Tower Http
+
+### Test toml file by range
+
+GET http://localhost:{{port}}/tower/Cargo.toml
+Range: bytes=100-
+Accept-Encoding: gzip
+
+### Test Bin File
+
+GET http://localhost:{{port}}/tower/fixtures/ed25519.pk
+
+### Test index.html
+GET http://localhost:{{port}}/tower/fixtures
+Accept-Encoding: gzip, deflate
