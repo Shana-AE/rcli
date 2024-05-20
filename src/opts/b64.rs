@@ -1,4 +1,5 @@
 use clap::{Args, Parser};
+use enum_dispatch::enum_dispatch;
 use std::{fmt, str::FromStr};
 
 use crate::{process_decode, process_encode, CmdExecutor};
@@ -6,6 +7,7 @@ use crate::{process_decode, process_encode, CmdExecutor};
 use super::verify_file;
 
 #[derive(Debug, Parser)]
+#[enum_dispatch(CmdExecutor)]
 pub enum Base64SubCommand {
     #[command(name = "encode", about = "Base64 encode a string")]
     Encode(EncodeOpts),
@@ -80,14 +82,5 @@ impl CmdExecutor for DecodeOpts {
         let decoded = process_decode(&self.input, self.format)?;
         println!("{}", decoded);
         Ok(())
-    }
-}
-
-impl CmdExecutor for Base64SubCommand {
-    async fn execute(self) -> anyhow::Result<()> {
-        match self {
-            Base64SubCommand::Encode(opts) => opts.execute().await,
-            Base64SubCommand::Decode(opts) => opts.execute().await,
-        }
     }
 }
