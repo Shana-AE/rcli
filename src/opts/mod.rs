@@ -8,6 +8,8 @@ use std::path::{Path, PathBuf};
 
 use clap::{Parser, Subcommand};
 
+use crate::CmdExecutor;
+
 pub use self::csv::{CsvOpts, OutputFormat};
 pub use self::text::{TextSignFormat, TextSubCommand};
 pub use b64::{Base64Format, Base64SubCommand};
@@ -31,8 +33,20 @@ pub enum SubCommand {
     Base64SubCommand(Base64SubCommand),
     #[command(name = "text", about = "Sign or verify a message", subcommand)]
     Text(TextSubCommand),
-    #[command(subcommand)]
+    #[command(subcommand, about = "Http server")]
     Http(HttpSubCommand),
+}
+
+impl CmdExecutor for SubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            SubCommand::Csv(opts) => opts.execute().await,
+            SubCommand::GenPass(opts) => opts.execute().await,
+            SubCommand::Base64SubCommand(cmd) => cmd.execute().await,
+            SubCommand::Text(cmd) => cmd.execute().await,
+            SubCommand::Http(cmd) => cmd.execute().await,
+        }
+    }
 }
 
 fn verify_file(filename: &str) -> Result<String, &'static str> {

@@ -1,4 +1,4 @@
-use std::{fs, io::Read, path::Path};
+use std::{collections::HashMap, fs, io::Read, path::Path};
 
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
@@ -19,7 +19,7 @@ pub trait TextVerify {
 }
 
 pub trait TextKeyGenerator {
-    fn generate() -> anyhow::Result<Vec<Vec<u8>>>;
+    fn generate() -> anyhow::Result<HashMap<&'static str, Vec<u8>>>;
 }
 
 pub struct Blake3 {
@@ -46,10 +46,12 @@ impl TextVerify for Blake3 {
 }
 
 impl TextKeyGenerator for Blake3 {
-    fn generate() -> anyhow::Result<Vec<Vec<u8>>> {
+    fn generate() -> anyhow::Result<HashMap<&'static str, Vec<u8>>> {
         let key = gen_pass::process_genpass(32, true, true, true, true)?;
-        let key = vec![key.as_bytes().to_vec()];
-        Ok(key)
+        let key = key.as_bytes().to_vec();
+        let mut map = HashMap::new();
+        map.insert("blake3.txt", key);
+        Ok(map)
     }
 }
 
@@ -97,13 +99,16 @@ impl Ed25519Signer {
 }
 
 impl TextKeyGenerator for Ed25519Signer {
-    fn generate() -> anyhow::Result<Vec<Vec<u8>>> {
+    fn generate() -> anyhow::Result<HashMap<&'static str, Vec<u8>>> {
         let mut csrng = OsRng;
         let sk = SigningKey::generate(&mut csrng);
         let pk = sk.verifying_key().as_bytes().to_vec();
         let sk = sk.as_bytes().to_vec();
+        let mut map = HashMap::new();
         println!("sk: {:?}, pk: {:?}", sk, pk);
-        Ok(vec![sk, pk])
+        map.insert("ed25519.sk", sk);
+        map.insert("ed25519.pk", pk);
+        Ok(map)
     }
 }
 
@@ -175,7 +180,9 @@ pub fn process_text_verify(
     Ok(())
 }
 
-pub fn process_text_generate(format: TextSignFormat) -> anyhow::Result<Vec<Vec<u8>>> {
+pub fn process_text_generate(
+    format: TextSignFormat,
+) -> anyhow::Result<HashMap<&'static str, Vec<u8>>> {
     match format {
         TextSignFormat::Blake3 => Blake3::generate(),
         TextSignFormat::Ed25519 => Ed25519Signer::generate(),
